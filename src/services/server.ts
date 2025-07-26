@@ -1,9 +1,10 @@
 import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import authenticationPlugin from '../plugins/authentication.js';
-import proxyRoutes from '../routes/proxy.js';
+import authenticationPlugin from '../plugins/authentication';
+import proxyRoutes from '../routes/proxy';
 import rateLimit from '@fastify/rate-limit';
 import helmet from '@fastify/helmet';
 import cors from '@fastify/cors';
+import httpProxy from '@fastify/http-proxy';
 
 async function buildApp(): Promise<FastifyInstance> {
   const fastify: FastifyInstance = Fastify({

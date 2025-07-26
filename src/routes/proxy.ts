@@ -1,24 +1,23 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
+import httpProxy from '@fastify/http-proxy';
 
-async function proxyRoutes(fastify: FastifyInstance, options: any) {
-  // Proxy to api.ruitotrading.com
-  fastify.get('/api/*', { preHandler: [fastify.authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
-    // In a real scenario, you would use a proxy plugin like @fastify/http-proxy
-    reply.send(`Proxying to api.ruitotrading.com for ${request.url}`);
+const HOST = process.env.API_HOST;
+const PORT = process.env.API_PORT;
+
+async function proxyRoutes(fastify: FastifyInstance) {
+  fastify.register(httpProxy, {
+    upstream: `https://${HOST}:${PORT}`,
+    prefix: '/api', // only proxies requests that contains '/api'
+    rewritePrefix: '/api', // removes '/api' from the URL before forwarding
+    http2: false, // Set to true if your upstream supports HTTP/2
   });
 
-  fastify.post('/api/*', { preHandler: [fastify.authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.send(`Proxying to api.ruitotrading.com for ${request.url}`);
-  });
-
-  // Proxy to log.ruitotrading.com
-  fastify.get('/log/*', { preHandler: [fastify.authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.send(`Proxying to log.ruitotrading.com for ${request.url}`);
-  });
-
-  fastify.post('/log/*', { preHandler: [fastify.authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.send(`Proxying to log.ruitotrading.com for ${request.url}`);
+  // Route 2: Proxy to Service B
+  fastify.register(httpProxy, {
+    upstream: `https://${HOST}:${PORT}`,
+    prefix: '/service-b', // Proxy requests starting with /service-b
+    rewritePrefix: '/service-b', // Remove prefix before forwarding
   });
 }
 
