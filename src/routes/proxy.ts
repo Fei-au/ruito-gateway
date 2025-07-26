@@ -2,8 +2,8 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 import httpProxy from '@fastify/http-proxy';
 
-const HOST = process.env.API_HOST;
-const PORT = process.env.API_PORT;
+const HOST = process.env.HOST;
+const PORT = process.env.PORT;
 
 async function proxyRoutes(fastify: FastifyInstance) {
   fastify.register(httpProxy, {
